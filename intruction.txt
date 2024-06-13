@@ -1,0 +1,15 @@
+1. Install mongoose library
+    npm install mongoose
+2. Set up the db connection
+    const mongoose = require("mongoose")
+    const MONGODB_URL = "mongodb://127.0.0.1:27017/bookhub003"  
+
+    mongoose.connect(MONGODB_URL)
+    .then(()=>{
+        console.log("DB Connection Succeeded...")
+    })
+    .catch((err)=>{
+        console.log("DB Connection Failed...", err)
+    })
+3. Define the model(attributes the structure of the database table/collection)
+4. Define the Controller(Business Logic)
