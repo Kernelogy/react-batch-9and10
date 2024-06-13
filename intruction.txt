@@ -13,3 +13,6 @@
     })
 3. Define the model(attributes the structure of the database table/collection)
 4. Define the Controller(Business Logic)
+5. Define the Route 
+    Connect the controller with corresponding path/url
+6. Activate the Route 
