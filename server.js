@@ -4,6 +4,9 @@ const app = express()
 app.use(express.urlencoded())
 app.use(express.json())
 
+const cors = require("cors")
+app.use(cors())
+
 
 const mongoose = require("mongoose")
 const MONGODB_URL = "mongodb://127.0.0.1:27017/bookhub003"
@@ -19,8 +22,8 @@ mongoose.connect(MONGODB_URL)
         console.log("DB Connection Failed...", err)
     })
 
-app.listen(3000, ()=>{
-    console.log("Server Listening on Port 3000")
+app.listen(4040, ()=>{
+    console.log("Server Listening on Port 4040")
 })
 
 
