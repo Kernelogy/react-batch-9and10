@@ -1,18 +1,20 @@
 const User = require("../models/UserModel")
 const { validationResult} = require("express-validator")
 const UserValidator = require("../validators/UserValidator")
-
+const bcrypt = require("bcrypt")
 
 exports.insert = [
     UserValidator.validateInsert,
-    (req, res)=>{   
+    async (req, res)=>{   
         const errors = validationResult(req)
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
         if(errors.isEmpty()){
             const user = new User({
                 username: req.body.username,
                 email: req.body.email,
                 contact: req.body.contact,
-                password: req.body.password
+                password: hashedPassword
             })
     
             user.save()
@@ -39,18 +41,29 @@ exports.list = [
             })
     }
 ]
-
+const jwt = require("jsonwebtoken")
 exports.login = [
-    (req, res) => {
+    async (req, res) => {
         const username = req.body.username
         const password = req.body.password
+        
         User.findOne({
-            username: username,
-            password: password
-        })
-        .then((user)=>{
-            if(user){
-                res.send({userFound: true})
+            username: username
+        })        
+        .then(async (user)=>{
+            const passwordMatch = await bcrypt.compare(password, user.password);
+            if(passwordMatch){
+                const token = jwt.sign({ 
+                    userId: user._id,
+                    username: user.username,
+                    email: user.email
+                 }, 'this-can-be-any-random-key', {
+                    expiresIn: '1h',
+                })
+                res.send({
+                    userFound: true,
+                    token: token
+                })
             }else{
                 res.send({userFound: false})
             }

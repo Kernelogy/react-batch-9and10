@@ -13,6 +13,14 @@ const MONGODB_URL = "mongodb://127.0.0.1:27017/bookhub003"
 
 const UserRoute = require("./routes/UserRoute")
 app.use(UserRoute)
+const AuthMiddleware = require("./middlewares/AuthMiddleware")
+
+app.get("/unprotected", AuthMiddleware.verifyToken, (req, res)=>{
+    res.send("Unprotected URL token not needed")
+})
+app.get("/protected", AuthMiddleware.verifyToken, (req, res)=>{
+    res.send("Protected URL token needed")
+})
 
 mongoose.connect(MONGODB_URL)
     .then(()=>{
