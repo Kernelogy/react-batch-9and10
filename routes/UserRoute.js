@@ -8,5 +8,7 @@ router.get("/user/list", UserController.list)
 router.post("/user/login", UserController.login)
 router.post("/user/update/:id", UserController.update)
 router.delete("/user/delete/:id", UserController.delete)
+router.post("/user/insertWithAddress", UserController.insertUserWithAddress)
+router.post("/user/insertWithAddressAndContacts", UserController.insertUserWithAddressAndContacts)
 
 module.exports = router

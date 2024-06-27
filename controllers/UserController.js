@@ -32,7 +32,7 @@ exports.insert = [
 
 exports.list = [
     (req, res) => {
-        User.find()
+        User.find().populate("address").populate("contacts")
             .then((users)=>{
                 res.send(users)
             })
@@ -106,4 +106,88 @@ exports.delete = [
     }
 ]
 
+const Address = require("../models/AddressModel")
+exports.insertUserWithAddress = [
+    (req, res) => {
+        const address = new Address({
+            plotNo: req.body.address.plotNo,
+            street: req.body.address.street,
+            landmark: req.body.address.landmark,
+            city: req.body.address.city,
+            state: req.body.address.state,
+            pincode: req.body.address.pincode
+        })
+        address.save()
+        .then((ele)=>{
+            const user = new User({
+                username: req.body.username,
+                email: req.body.email,
+                contact: req.body.contact,
+                password: req.body.password,
+                address: ele._id
+            })
+            user.save()
+            .then((ele)=>{
+                res.send(ele)
+            })
+            .catch((err)=>{
+                res.send(err)
+            })
+        })
+
+    }
+]
+const Contact = require("../models/ContactModel")
+const ContactModel = require("../models/ContactModel")
+exports.insertUserWithAddressAndContacts = [
+    async (req, res) => {
+        let savedAddress = null
+        let savedContacts = []
+        const address = new Address({
+            plotNo: req.body.address.plotNo,
+            street: req.body.address.street,
+            landmark: req.body.address.landmark,
+            city: req.body.address.city,
+            state: req.body.address.state,
+            pincode: req.body.address.pincode
+        })
+        console.log("Saving Address")
+        await address.save()
+        .then((ele)=>{
+            savedAddress = ele
+        })
+        console.log("Address Saved")
+
+       for(let i=0; i<req.body.contacts.length; i++){
+            let e = req.body.contacts[i]
+            const contact = new ContactModel({
+                data: e.data, type: e.type, active: e.active                 
+            })
+            console.log("Saving Contact")
+            await contact.save().then((t)=>{
+                savedContacts = [...savedContacts, t._id]
+            })
+            console.log("Contact Saved")
+       }
+        console.log(savedContacts)
+        console.log("Saving User")
+        const user = new User({
+            username: req.body.username,
+            email: req.body.email,
+            contact: req.body.contact,
+            password: req.body.password,
+            address: savedAddress._id,
+            contacts: savedContacts
+        })
+        await user.save()
+        .then((ele)=>{
+            res.send(ele)
+        })
+        .catch((err)=>{
+            res.send(err)
+        })
+        console.log("USer Saved")
+
+    }
+]
 
